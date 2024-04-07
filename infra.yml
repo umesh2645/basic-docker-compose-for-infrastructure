@@ -90,9 +90,36 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
 
+  mysql:
+    image: mysql:latest
+    container_name: local_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: events
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: local_phpmyadmin
+    restart: always
+    ports:
+      - "8082:80"
+    environment:
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+
 volumes:
   postgres_data:
   pgadmin_data:
   mongo_data:
   redis_data:
   mssql_data:
+  mysql_data:
