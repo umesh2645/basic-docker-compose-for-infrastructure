@@ -1,4 +1,4 @@
-docker-compose -f infra.yml up -d
+docker-compose up --build -d
 
 Connect to mssql running inside docker
 Server name should be - localhost, port name
