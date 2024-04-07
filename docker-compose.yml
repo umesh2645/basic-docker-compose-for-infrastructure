@@ -1,0 +1,125 @@
+version: "3"
+
+services:
+  rabbitmq:
+    image: "rabbitmq:management"
+    container_name: local_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: myuser
+      RABBITMQ_DEFAULT_PASS: mypassword
+
+  postgres:
+    image: postgres:latest
+    container_name: local_pgdb
+    restart: always
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: local_pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  mongodb:
+    image: mongo:latest
+    container_name: local_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: myuser
+      MONGO_INITDB_ROOT_PASSWORD: mypassword
+      MONGO_INITDB_DATABASE: mymongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: local_redis
+    hostname: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redis-commander:
+    container_name: local_redis_commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: local_mssql
+    restart: always
+    environment:
+      SA_PASSWORD: Mypassword123*
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_TCP_PORT: 1433 # Set your desired custom port here
+    ports:
+      - "14333:1433" # Map your desired custom port to the container's port
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  mysql:
+    image: mysql:latest
+    container_name: local_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: events
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: local_phpmyadmin
+    restart: always
+    ports:
+      - "8082:80"
+    environment:
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  mongo_data:
+  redis_data:
+  mssql_data:
+  mysql_data:
